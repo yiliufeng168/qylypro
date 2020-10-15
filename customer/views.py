@@ -63,6 +63,7 @@ def showbusiness(request):
         bus_list.append(bus.get_data_dic())
     context['status']="OK"
     context['bus_list']=bus_list
+
     return JsonResponse(context)
 
 def showgoods(request):
