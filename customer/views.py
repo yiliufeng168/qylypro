@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.db.models import Min
 # Create your views here.
 
 
@@ -9,7 +10,7 @@ import uuid
 
 from .models import Tourist
 from management.models import User
-from merchant.models import Business,Goods
+from merchant.models import Business,Goods,Sell
 
 
 APPID='wx1a3241e73216cd5a'
@@ -57,10 +58,20 @@ def login(request):
 def showbusiness(request):
     online_users=User.objects.filter(status=User.STATUS_ONLINE).filter(type=User.TYPE_BUSINESS)
     buss=Business.objects.filter(user_id__in=online_users)
+    type=request.GET.get('type')
+
+    if type!=None:
+        buss=buss.filter(type=type)
+
+
     context={}
     bus_list=[]
     for bus in buss:
-        bus_list.append(bus.get_data_dic())
+        b=bus.get_data_dic()
+        goods=Goods.objects.filter(business=bus).aggregate(Min('price'))
+        if goods['price__min']!=None:
+            b['minprice']=goods['price__min']
+            bus_list.append(b)
     context['status']="OK"
     context['bus_list']=bus_list
 

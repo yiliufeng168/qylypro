@@ -25,8 +25,11 @@ class SessionUtil():
 def login(request):
     session=request.session
     if request.method=='GET':
+
         user=SessionUtil.getSession(session, 'user')
-        return JsonResponse(user)
+        if user==None:
+            return JsonResponse({'status':'false','msg':'未登录'})
+        return JsonResponse({'status':'OK','user':user})
     else:
         context={
             'msg':"用户名或密码错误",

@@ -15,7 +15,7 @@ class GoodsForm(forms.ModelForm):
     class Meta:
         model=Goods
         fields=(
-            'name','pic','price'
+            'name','pic','introduct'
         )
 
 class EditGoodsForm(forms.Form):
@@ -28,5 +28,5 @@ class SellForm(forms.ModelForm):
     class Meta:
         model=Sell
         fields=(
-            'total','startdatetime','enddatetime','goods'
+            'total','startdatetime','enddatetime','goods','price'
         )

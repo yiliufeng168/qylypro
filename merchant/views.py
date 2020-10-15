@@ -71,7 +71,7 @@ def addgoods(request):
         goods=Goods()
         goods.name=cleaned_data['name']
         goods.pic=request.FILES.get('pic')
-        goods.price=cleaned_data['price']
+        goods.introduct=cleaned_data['introduct']
 
         uid=user_id=request.session.get('user')['id']
         try:
@@ -98,6 +98,7 @@ def addsell(request):
         sell=Sell()
         sell.total=cleaned_data['total']
         sell.surplus=sell.total
+        sell.price=cleaned_data['price']
         if cleaned_data['startdatetime']!=None and cleaned_data['enddatetime']!=None :
             sell.startdatetime=cleaned_data['startdatetime']
             sell.enddatetime=cleaned_data['enddatetime']

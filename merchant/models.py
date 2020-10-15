@@ -86,7 +86,7 @@ class Goods(models.Model):
     id=models.UUIDField(verbose_name='商品编号',default=uuid.uuid4,primary_key=True)
     name=models.CharField(max_length=50,verbose_name='商品名')
     pic=models.ImageField(upload_to=pic_path,verbose_name='图片地址',blank=True)
-    price=models.FloatField(verbose_name='价格')
+    introduct=models.CharField(max_length=500,verbose_name='简介',null=True)
     business=models.ForeignKey(Business,verbose_name='所属商家',on_delete=models.CASCADE)
 
     def getdatadic(self):
@@ -94,7 +94,7 @@ class Goods(models.Model):
             'id':self.id.hex,
             'name':self.name,
             'pic':self.pic.url,
-            'price':self.price,
+            'introduct':self.introduct,
         }
         return goods
 
@@ -113,13 +113,14 @@ class Sell(models.Model):
     startdatetime = models.DateTimeField(verbose_name='开始时间',blank=True,null=True)
     enddatetime = models.DateTimeField(verbose_name='结束时间',blank=True,null=True)
     goods=models.ForeignKey(Goods,verbose_name='所指的的商品',on_delete=models.CASCADE)
-
+    price = models.FloatField(verbose_name='价格',default=999)
     def getdatadic(self):
         sell={
             'total':self.total,
             'surp;us':self.surplus,
             'startdatetime':self.startdatetime,
             'enddatetime':self.enddatetime,
+            'price': self.price,
             'id':self.id,
         }
         return sell
