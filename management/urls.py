@@ -1,0 +1,23 @@
+from django.urls import path
+
+from .views import (index,login,loginout,
+                    addUser,showUserList,
+                    modifyUserStatus,modifySelfInfo,
+                    modifyPassword,setstatus,addadmin)
+
+urlpatterns=[
+    path('index/',index),
+    path('login/',login),
+
+    path('login/addadmin/',addadmin),
+    path('loginout/',loginout),
+    path('modifySelfInfo/',modifySelfInfo),
+    path('modifyPassword/',modifyPassword),
+    path('setstatus/',setstatus),
+
+    # 下列需要管理员权限
+    path('admin/addUser/',addUser),
+    path('admin/showUserList/',showUserList),
+    path('admin/modifyUserStatus/',modifyUserStatus),
+
+]
