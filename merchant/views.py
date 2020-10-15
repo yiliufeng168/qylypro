@@ -192,9 +192,15 @@ def delsells(request):
     del_list=del_list.split(',')
     user=request.session.get('user')
     for se in del_list:
-        if Sell.objects.get(id=se).goods.business.user_id.hex != user['id']:
+        try:
+            if Sell.objects.get(id=se).goods.business.user_id.hex != user['id']:
+                return JsonResponse({
+                    "msg": '用户没有删除该sell权限',
+                    'status': 'false'
+                })
+        except Sell.DoesNotExist:
             return JsonResponse({
-                "msg": '用户没有删除该sell权限',
+                "msg": 'sellid不存在',
                 'status': 'false'
             })
     for se in del_list:

@@ -112,7 +112,7 @@ def showUserList(request):
             'status':'false',
             'msg':'参数不正确',
         })
-    user_list=User.objects.filter(~Q(type=0))
+    user_list=User.objects.filter(~Q(type=0)).order_by('username')
     paginator=Paginator(user_list,pagecount)
     page_num=paginator.num_pages
     page_user_list=paginator.page(page)
@@ -138,10 +138,16 @@ def showUserList(request):
     return JsonResponse(context)
 
 def modifyUserStatus(request):
-    username_lsit=request.GET.get('username_list').split(',')
-    status=request.GET.get('status')
+    username_lsit=request.GET.get('username_list')
+    status = request.GET.get('status')
+    if username_lsit==None or status==None:
+        return JsonResponse({
+            'status':'false',
+            'msg':'参数不正确'
+        })
+
     context={"status":'OK'}
-    users=User.objects.filter(username__in=username_lsit).filter(~Q(type=0))
+    users=User.objects.filter(username__in=username_lsit.split(',')).filter(~Q(type=0))
     for us in users:
         us.status=status
         us.save()
@@ -154,7 +160,7 @@ def modifySelfInfo(request):
     form=ModifySelfInfoForm(request.POST)
     if form.is_valid():
         cleaned_data=form.cleaned_data
-        user_id=SessionUtil.getSession('user')['id']
+        user_id=SessionUtil.getSession(request.session,'user')['id']
         my_user=User.objects.get(id=user_id)
         my_user.username=cleaned_data['username']
         my_user.phone=cleaned_data['phone']
@@ -216,10 +222,7 @@ def setstatus(request):
             user.status=User.STATUS_ONLINE
         else:
             user.status=User.STATUS_OFFLINE
-        print(online)
-        print(user.status)
         user.save()
-
     else:
         context['status']='false'
         context['msg']='用户没有权限'

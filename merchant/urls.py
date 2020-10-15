@@ -6,7 +6,7 @@ from .views import (editBusinessInfo,getBusinessInfo,
 
 urlpatterns=[
     # business/目录下的地址需要商家权限,或登录
-    path('business/editBusinessInfo',editBusinessInfo),
+    path('business/editBusinessInfo/',editBusinessInfo),
     path('business/getBusinessInfo/', getBusinessInfo),
 
 
