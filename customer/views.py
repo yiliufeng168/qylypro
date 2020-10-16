@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 from django.db.models import Min
+from django.utils import timezone
 # Create your views here.
 
 
@@ -56,24 +58,55 @@ def login(request):
     return jre
 
 def showbusiness(request):
+    try:
+        page = int(request.GET.get('page', 1))
+        pagecount = int(request.GET.get('pagecount', 10))
+    except:
+        return JsonResponse({
+            'status': 'false',
+            'msg': '参数不正确',
+        })
     online_users=User.objects.filter(status=User.STATUS_ONLINE).filter(type=User.TYPE_BUSINESS)
     buss=Business.objects.filter(user_id__in=online_users)
     type=request.GET.get('type')
-
     if type!=None:
         buss=buss.filter(type=type)
-
-
-    context={}
+    Sell.objects.filter(goods__in=Goods.objects.filter(business__in=buss))
     bus_list=[]
     for bus in buss:
         b=bus.get_data_dic()
-        goods=Goods.objects.filter(business=bus).aggregate(Min('price'))
+        golist=Goods.objects.filter(business=bus)
+        goods=Sell.objects.filter(goods__in=golist).aggregate(Min('price'))
         if goods['price__min']!=None:
             b['minprice']=goods['price__min']
             bus_list.append(b)
-    context['status']="OK"
-    context['bus_list']=bus_list
+    paginator = Paginator(bus_list, pagecount)
+    page_num = paginator.num_pages
+    page_bus_list = paginator.page(page)
+    page_user_list_tolist = []
+    # for sl in list(page_bus_list.object_list):
+    #     if sl.enddatetime != None:
+    #         if timezone.now().__gt__(sl.enddatetime):
+    #             sl.delete()
+    #             continue
+    #     page_user_list_tolist.append(sl.getdatadic())
+    if page_bus_list.has_next():
+        next_page = page + 1
+    else:
+        next_page = page
+    if page_bus_list.has_previous():
+        previous_page = page - 1
+    else:
+        previous_page = page
+    context = {
+        'status': 'OK',
+        'user_list': page_bus_list.object_list,
+        'curr_page': page,
+        'previous_page': previous_page,
+        'next_page': next_page,
+        'total_page': page_num,
+        'total_bus':len(page_bus_list),
+    }
 
     return JsonResponse(context)
 

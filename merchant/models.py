@@ -84,16 +84,20 @@ class Business(models.Model):
 
 class Goods(models.Model):
     id=models.UUIDField(verbose_name='商品编号',default=uuid.uuid4,primary_key=True)
+
     name=models.CharField(max_length=50,verbose_name='商品名')
     pic=models.ImageField(upload_to=pic_path,verbose_name='图片地址',blank=True)
     introduct=models.CharField(max_length=500,verbose_name='简介',null=True)
     business=models.ForeignKey(Business,verbose_name='所属商家',on_delete=models.CASCADE)
 
     def getdatadic(self):
+        picurl=''
+        if self.pic!='':
+            picurl=self.pic.url
         goods={
             'id':self.id.hex,
             'name':self.name,
-            'pic':self.pic.url,
+            'pic':picurl,
             'introduct':self.introduct,
         }
         return goods
@@ -117,7 +121,7 @@ class Sell(models.Model):
     def getdatadic(self):
         sell={
             'total':self.total,
-            'surp;us':self.surplus,
+            'surplus':self.surplus,
             'startdatetime':self.startdatetime,
             'enddatetime':self.enddatetime,
             'price': self.price,
