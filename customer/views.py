@@ -61,6 +61,8 @@ def showbusiness(request):
     try:
         page = int(request.GET.get('page', 1))
         pagecount = int(request.GET.get('pagecount', 10))
+        startdatetime=request.GET.get('startdatetime')
+        enddatetime=request.GET.get('enddatetime')
     except:
         return JsonResponse({
             'status': 'false',
@@ -76,7 +78,12 @@ def showbusiness(request):
     for bus in buss:
         b=bus.get_data_dic()
         golist=Goods.objects.filter(business=bus)
-        goods=Sell.objects.filter(goods__in=golist).aggregate(Min('price'))
+        sells=Sell.objects.filter(goods__in=golist)
+        if startdatetime!=None:
+            print(startdatetime)
+            print(enddatetime)
+            sells=sells.filter(startdatetime__lte=startdatetime).filter(enddatetime__gte=enddatetime)
+        goods=sells.aggregate(Min('price'))
         if goods['price__min']!=None:
             b['minprice']=goods['price__min']
             bus_list.append(b)
