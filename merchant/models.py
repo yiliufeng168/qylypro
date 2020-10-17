@@ -95,7 +95,7 @@ class Goods(models.Model):
         if self.pic!='':
             picurl=self.pic.url
         goods={
-            'id':self.id.hex,
+            'goods_id':self.id.hex,
             'name':self.name,
             'pic':picurl,
             'introduct':self.introduct,
@@ -125,7 +125,7 @@ class Sell(models.Model):
             'startdatetime':self.startdatetime,
             'enddatetime':self.enddatetime,
             'price': self.price,
-            'id':self.id,
+            'sell_id':self.id,
         }
         return sell
 

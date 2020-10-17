@@ -1,10 +1,9 @@
 from django.http import JsonResponse
-from django.core.paginator import Paginator
 from django.utils import timezone
 
 from .models import Business,Goods,Sell
 from .forms import EditBusinessInfoForm,GoodsForm,SellForm,EditGoodsForm
-
+from MyUtil.myUtil import pageUtil
 
 import json
 # Create your views here.
@@ -132,30 +131,11 @@ def showsells(request):
             if timezone.now().__gt__(sl.enddatetime):
                 sl.delete()
                 continue
-    paginator = Paginator(selllist, pagecount)
-    page_num = paginator.num_pages
-    page_sell_list = paginator.page(page)
-    page_sell_list_tolist = []
-    for sl in list(page_sell_list.object_list):
-        page_sell_list_tolist.append(sl.getdatadic())
-    if page_sell_list.has_next():
-        next_page = page + 1
-    else:
-        next_page = page
-    if page_sell_list.has_previous():
-        previous_page = page - 1
-    else:
-        previous_page = page
-    context = {
-        'status': 'OK',
-        'sell_list': page_sell_list_tolist,
-        'curr_page': page,
-        'previous_page': previous_page,
-        'next_page': next_page,
-        'total_page': page_num,
-        'total_sells':len(selllist)
-    }
-
+    selist=[]
+    for se in selllist:
+        selist.append(se.getdatadic())
+    context={'status':'OK'}
+    context.update(pageUtil(page,pagecount,selist))
     return JsonResponse(context)
 
 def showgoodslist(request):
@@ -168,29 +148,11 @@ def showgoodslist(request):
             'msg': '参数不正确',
         })
     goodslist = Goods.objects.filter(business=request.session.get('user')['id']).order_by('-name')
-    paginator = Paginator(goodslist, pagecount)
-    page_num = paginator.num_pages
-    page_user_list = paginator.page(page)
-    page_user_list_tolist = []
-    for gds in list(page_user_list.object_list):
-        page_user_list_tolist.append(gds.getdatadic())
-    if page_user_list.has_next():
-        next_page = page + 1
-    else:
-        next_page = page
-    if page_user_list.has_previous():
-        previous_page = page - 1
-    else:
-        previous_page = page
-    context = {
-        'status': 'OK',
-        'user_list': page_user_list_tolist,
-        'curr_page': page,
-        'previous_page': previous_page,
-        'next_page': next_page,
-        'total_page': page_num,
-        'total_goods':len(goodslist),
-    }
+    gdlist=[]
+    for gd in goodslist:
+        gdlist.append(gd.getdatadic())
+    context={"status":"OK"}
+    context.update(pageUtil(page,pagecount,gdlist))
     return JsonResponse(context)
 
 def delsells(request):

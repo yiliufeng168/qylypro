@@ -9,23 +9,27 @@ class PowerMiddleware(MiddlewareMixin):
         # 第一层过滤
         # 在/merchant下，未登录用户只能访问login
         url_d=request.path[1:].split('/')
-        se=request.cookie
-        user=se.get('user')
+
         # url一级目录为management
         if url_d[0]=='customer':
             # 二级url如果为business
             # 则需验证登录
             if url_d[1]=='tourist':
-                if user==None or user['username']==None:
+                session_id = request.COOKIES['session_id']
+                if session_id==None :
                     return JsonResponse({
                         "msg":'请先登录',
                         'status':'false'
                     })
-                if user['type']!=2:
-                    return JsonResponse({
-                        "msg": '用户没有商家权限',
-                        'status': 'false'
-                    })
+                else:
+                    try:
+                        Tourist.objects.get(sessionid=session_id)
+                    except Tourist.DoesNotExist:
+                        return JsonResponse({
+                            "msg": '登陆过期，请重新登陆',
+                            'status': 'false'
+                        })
+
 
 
 

@@ -7,7 +7,7 @@ from django.db.utils import IntegrityError
 
 from .models import User
 from .forms import LoginUserForm,AddUserForm,ModifySelfInfoForm
-
+from MyUtil.myUtil import pageUtil
 
 import hashlib
 import json
@@ -116,28 +116,11 @@ def showUserList(request):
             'msg':'参数不正确',
         })
     user_list=User.objects.filter(~Q(type=0)).order_by('username')
-    paginator=Paginator(user_list,pagecount)
-    page_num=paginator.num_pages
-    page_user_list=paginator.page(page)
-    page_user_list_tolist=[]
-    for us in list(page_user_list.object_list):
-        page_user_list_tolist.append(us.__str__())
-    if page_user_list.has_next():
-        next_page=page+1
-    else:
-        next_page=page
-    if page_user_list.has_previous():
-        previous_page=page-1
-    else:
-        previous_page=page
-    context = {
-        'status':'OK',
-        'user_list': page_user_list_tolist,
-        'curr_page': page,
-        'previous_page': previous_page,
-        'next_page': next_page,
-        'total_page':page_num,
-    }
+    ulist=[]
+    for user in user_list:
+        ulist.append(user.__str__())
+    context={'status':'OK'}
+    context.update(pageUtil(page,pagecount,ulist))
     return JsonResponse(context)
 
 def modifyUserStatus(request):

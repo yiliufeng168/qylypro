@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'management.middlewares.LoginMiddleware',
     'merchant.middlewares.PowerMiddleware',
+    'customer.middlewares.PowerMiddleware',
 ]
 
 ROOT_URLCONF = 'tourpro.urls'
