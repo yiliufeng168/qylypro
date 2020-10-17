@@ -155,13 +155,14 @@ def sendorder(request):
             for item in order_list:
                 sell=Sell.objects.get(id=item['sell_id'])
                 print('1')
+                totalprice = totalprice + item['count'] * sell.price
                 if sell.surplus-item['count']>=0:
                     sell.surplus=F('surplus')-item['count']
                     sell.save()
-                    totalprice=totalprice+item['count']*sell.price
                 else:
                     print(sell.id)
                     raise Exception
+
     except Exception as e:
         print(e)
         return JsonResponse({'status':'false','msg':"商品已售完"})
@@ -178,7 +179,6 @@ def sendorder(request):
         gd=sell.goods
         reserve.goods=gd
         reserve.virtualcode=""
-
         reserve.goods_name=gd.name
         reserve.goods_price=sell.price
         reserve.goods_pic=gd.pic
@@ -299,7 +299,16 @@ def showrecommend(request):
     return JsonResponse(context)
 
 def showgoodsdetail(request):
-    return JsonResponse({'status':'OK'})
+    goods_id=request.GET.get('goods_id')
+    goods=Goods.objects.get(id=goods_id)
+    sells=Sell.objects.filter(goods=goods)
+    slist=[]
+    for se in sells:
+        sedic={}
+        sedic.update(se.getdatadic())
+        slist.append(sedic)
+
+    return JsonResponse({'status':'OK','slist':slist})
 
 def delreserve(request):
     orderid=request.GET.get('orderid')

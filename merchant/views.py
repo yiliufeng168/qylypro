@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 
 from .models import Business,Goods,Sell
+from customer.models import Reserve,Order
 from .forms import EditBusinessInfoForm,GoodsForm,SellForm,EditGoodsForm
 from MyUtil.myUtil import pageUtil
 
@@ -120,12 +121,18 @@ def showsells(request):
         page = int(request.GET.get('page', 1))
         pagecount = int(request.GET.get('pagecount', 10))
         goods_id=request.GET.get('goods')
+        sellout=int(request.GET.get('sellout'),0)
     except:
         return JsonResponse({
             'status': 'false',
             'msg': '参数不正确',
         })
-    selllist = Sell.objects.filter(goods=goods_id).order_by('startdatetime')
+    sslist=Sell.objects.filter(goods=goods_id)
+    if sellout==1:
+        sslist=sslist.filter(surplus__gt=0)
+    elif sellout==2:
+        sslist=sslist.filter(surplus=0)
+    selllist = sslist.order_by('startdatetime')
     for sl in selllist:
         if sl.enddatetime!=None:
             if timezone.now().__gt__(sl.enddatetime):
@@ -228,8 +235,37 @@ def editgoods(request):
         })
     return JsonResponse(context)
 
+def showorders(request):
+    try:
+        page = int(request.GET.get('page', 1))
+        pagecount = int(request.GET.get('pagecount', 10))
+        order_status=request.GET.get('order_status')
+    except:
+        return JsonResponse({
+            'status': 'false',
+            'msg': '参数不正确',
+        })
+    user=request.session.get('user')
+    orders=Order.objects.filter(business_id=user['id']).order_by('-order_time')
+    if order_status!=None:
+        orders=orders.filter(orderstatus=order_status)
+    olist=[]
+    for od in orders:
+        odic={}
+        odic['order_time']=od.order_time
+        odic['receiver']=od.receiver
+        odic['phone']=od.phone
+        odic['address']=od.address
+        odic['remarks']=od.remarks
+        odic['orderstatus']=od.orderstatus
+        olist.append(odic)
+    context={
+        'status':"OK"
+    }
+    context.update(pageUtil(page,pagecount,olist))
+    return JsonResponse(context)
 
-def editsell(request):
-    pass
+def showorderdetails(request):
+    return JsonResponse({"status":"OK"})
 
 
