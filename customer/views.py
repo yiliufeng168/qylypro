@@ -269,15 +269,37 @@ def showorderdetails(request):
     return JsonResponse(context)
 
 def showrecommend(request):
+    try:
+        page = int(request.GET.get('page', 1))
+        pagecount = int(request.GET.get('pagecount', 10))
+    except:
+        return JsonResponse({
+            'status': 'false',
+            'msg': '参数不正确',
+        })
     goods_insell=Sell.objects.all().values('goods').distinct()
     goods_inreserve=Reserve.objects.all().values('goods').distinct()
     res=Reserve.objects.filter(goods__in=goods_inreserve.intersection(goods_insell))
     tuijian_list=res.annotate(count=Count('goods')).values('goods', 'goods_count').distinct().order_by('-goods_count')
-    # pageUtil()
+    tjgoods=[]
+    for i in tuijian_list:
+        tjgoods.append(i['goods'])
+    print(tjgoods)
+    tjgoods_list=Goods.objects.filter(id__in=tjgoods)
+    tjgoods_list=tjgoods_list.annotate(min=Min('sell__price'))
+    tjlist=[]
+    for tj in tjgoods_list:
+        tjdic={}
+        tjdic.update(tj.getdatadic())
+        tjdic.update({'minprice':tj.min})
+        tjlist.append(tjdic)
 
+    context={'status':"OK",}
+    context.update(pageUtil(page,pagecount,tjlist))
+    return JsonResponse(context)
 
+def showgoodsdetail(request):
     return JsonResponse({'status':'OK'})
-
 
 def delreserve(request):
     orderid=request.GET.get('orderid')

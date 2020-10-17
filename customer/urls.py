@@ -1,6 +1,8 @@
 from django.urls import path
 
-from .views import login,showgoods,showbusiness,sendorder,showorderlist,showorderdetails,delreserve,showrecommend
+from .views import (login,showgoods,showbusiness,
+                    sendorder,showorderlist,showorderdetails,
+                    delreserve,showrecommend,showgoodsdetail)
 
 
 urlpatterns=[
@@ -8,6 +10,8 @@ urlpatterns=[
     path('showrecommend/',showrecommend),
     path('showgoods/',showgoods),
     path('showbusiness/',showbusiness),
+    path('showgoodsdetail/',showgoodsdetail),
+
     # 下列页面需要登陆后才能访问
 
     path('tourist/sendorder/',sendorder),
