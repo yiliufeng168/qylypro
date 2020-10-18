@@ -178,7 +178,7 @@ def sendorder(request):
         sell=Sell.objects.get(id=item['sell_id'])
         gd=sell.goods
         reserve.goods=gd
-        reserve.virtualcode=""
+
         reserve.goods_name=gd.name
         reserve.goods_price=sell.price
         reserve.goods_pic=gd.pic
@@ -246,7 +246,7 @@ def showorderdetails(request):
         'address':order.address,
         'totalprice':order.totalprice,
         'ordertime':order.order_time,
-        'business_id':order.business_id,
+        'business_id':order.business_id.hex,
         'business_name':order.business.name,
         'orderstatus':order.orderstatus,
     }
@@ -254,12 +254,13 @@ def showorderdetails(request):
     reslist=Reserve.objects.filter(order=order)
     for res in reslist:
         re={}
+        re['id']=res.id.hex
         re['name']=res.goods_name
         re['price']=res.goods_price
         re['count']=res.goods_count
         re['startdatetime']=res.startdatetime
         re['enddatetime']=res.enddatetime
-        re['goods_id']=res.goods_id
+        re['goods_id']=res.goods_id.hex
         re['virtualcode']=res.virtualcode
         re['usingstatus']=res.usingstatus
         rlist.append(re)
@@ -329,4 +330,18 @@ def delreserve(request):
 
 
 def getvcode(request):
-    return JsonResponse({"status":'OK'})
+    res_id=request.GET.get("res_id")
+    try:
+        res=Reserve.objects.get(id=uuid.UUID(res_id).hex)
+    except Reserve.DoesNotExist:
+        return JsonResponse({"status":"false",'msg':'res not exist'})
+    if res.order.tourist_id!=Tourist.objects.get(sessionid=request.COOKIES.get('session_id')).openid:
+        return JsonResponse({"status": "false", 'msg': '你没有这件宝贝'})
+    if res.order.orderstatus!=Order.ORDER_STATUS_DELIVERED:
+        return JsonResponse({"status": "false", 'msg': '未发货'})
+    res.virtualcode=uuid.uuid4()
+    res.save()
+
+
+
+    return JsonResponse({"status":'OK','vcode':res.virtualcode.hex})

@@ -67,6 +67,7 @@ MIDDLEWARE = [
     'management.middlewares.LoginMiddleware',
     'merchant.middlewares.PowerMiddleware',
     'customer.middlewares.PowerMiddleware',
+    'verification.middlewares.PowerMiddleware',
 ]
 
 ROOT_URLCONF = 'tourpro.urls'

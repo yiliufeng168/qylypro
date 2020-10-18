@@ -305,10 +305,7 @@ def processorders(request):
         return JsonResponse({"status": "false",'msg':'订单不存在'})
     if len(ods)!=len(jsdata['order_ids']):
         return JsonResponse({"status": "false",'msg':'订单id有误'})
-
-
     for od in ods:
         od.orderstatus=jsdata['orderstatus']
         od.save()
-
     return JsonResponse({"status":"OK"})

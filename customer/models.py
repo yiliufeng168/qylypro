@@ -51,7 +51,7 @@ class Reserve(models.Model):
     id=models.UUIDField(verbose_name='订单详细ID',primary_key=True,default=uuid.uuid4())
     order=models.ForeignKey(Order,on_delete=models.CASCADE,verbose_name='订单ID')
     goods = models.ForeignKey(Goods, on_delete=models.DO_NOTHING, verbose_name='商品ID')
-    virtualcode = models.URLField(verbose_name='虚拟码')
+    virtualcode = models.UUIDField(verbose_name='虚拟码',null=True,blank=True,default=None)
     usingstatus = models.PositiveIntegerField(default=USINGSTATUS_NOUSING, choices=USINGSTATUS_ITEMS, verbose_name='使用状态')
 
     #冗余属性

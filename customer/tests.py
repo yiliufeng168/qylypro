@@ -25,7 +25,8 @@ class TGG(TestCase):
         print(g.name,g.min)
 
 class Tggg(TestCase):
-    pass
+    res=Reserve.objects.get(id=uuid.UUID('729b9090a6cb4e4e8d4313ae1644ba0e'))
+    print(res)
 
 
 
