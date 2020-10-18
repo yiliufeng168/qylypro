@@ -108,9 +108,10 @@ def addsell(request):
         sell.surplus=sell.total
         sell.price=cleaned_data['price']
         if cleaned_data['startdatetime']!=None and cleaned_data['enddatetime']!=None :
+            if cleaned_data['enddatetime']<timezone.now():
+                return JsonResponse({'status':"false","msg":'不能发售截止日期在今天之前的商品'})
             sell.startdatetime=cleaned_data['startdatetime']
             sell.enddatetime=cleaned_data['enddatetime']
-
         sell.save()
     else:
         context['status']="false",
@@ -134,13 +135,16 @@ def showsells(request):
     elif sellout==2:
         sslist=sslist.filter(surplus=0)
     selllist = sslist.order_by('startdatetime')
-    for sl in selllist:
-        if sl.enddatetime!=None:
-            if timezone.now().__gt__(sl.enddatetime):
-                sl.delete()
-                continue
+
     selist=[]
     for se in selllist:
+        # if se.enddatetime!=None:
+        #     print(se.enddatetime)
+        #     print(se.enddatetime>timezone.now())
+        #     print(timezone.now())
+        #     if timezone.now()>se.enddatetime:
+        #         se.delete()
+        #         continue
         selist.append(se.getdatadic())
     context={'status':'OK'}
     context.update(pageUtil(page,pagecount,selist))
@@ -174,6 +178,9 @@ def delsells(request):
     user=request.session.get('user')
     for se in del_list:
         try:
+            print(se)
+            print(Sell.objects.get(id=se).goods.business.user_id.hex)
+            print(user['id'])
             if Sell.objects.get(id=se).goods.business.user_id.hex != user['id']:
                 return JsonResponse({
                     "msg": '用户没有删除该sell权限',
