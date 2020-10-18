@@ -254,7 +254,7 @@ def showorderdetails(request):
     reslist=Reserve.objects.filter(order=order)
     for res in reslist:
         re={}
-        re['id']=res.id.hex
+        re['res_id']=res.id.hex
         re['name']=res.goods_name
         re['price']=res.goods_price
         re['count']=res.goods_count
