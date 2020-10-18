@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import (editBusinessInfo,getBusinessInfo,
-                    addgoods,addsell,showgoodslist,
-                    showsells,delsells,delgoods,editgoods,
-                    showorders,showorderdetails)
+from .views import (editBusinessInfo, getBusinessInfo,
+                    addgoods, addsell, showgoodslist,
+                    showsells, delsells, delgoods, editgoods,
+                    showorders, showorderdetails, processorders)
 
 urlpatterns=[
     # business/目录下的地址需要商家权限,或登录
@@ -22,4 +22,5 @@ urlpatterns=[
 
     path('business/showorders/',showorders),
     path('business/showorderdetails/',showorderdetails),
+    path('business/processorders/', processorders),
 ]

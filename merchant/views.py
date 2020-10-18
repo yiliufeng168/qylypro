@@ -274,8 +274,6 @@ def showorderdetails(request):
         order=Order.objects.get(Q(id=orderid)&Q(business_id=user['id']))
     except Order.DoesNotExist:
         return JsonResponse({"status":'false','msg':'订单不存在'})
-
-
     odic = {}
     odic['order_id'] = order.id.hex
     odic['order_time'] = order.order_time
@@ -295,8 +293,22 @@ def showorderdetails(request):
         'relist':reslist
     }
     context.update(odic)
-
-
     return JsonResponse(context)
 
+def processorders(request):
+    jsdata=json.loads(request.body)
+    if jsdata['orderstatus']==0:
+        return JsonResponse({"status": "false",'msg':'参数错误'})
+    user=request.session.get('user')
+    ods=Order.objects.filter(id__in=jsdata['order_ids']).filter(business_id=user['id'])
+    if len(ods)==0:
+        return JsonResponse({"status": "false",'msg':'订单不存在'})
+    if len(ods)!=len(jsdata['order_ids']):
+        return JsonResponse({"status": "false",'msg':'订单id有误'})
 
+
+    for od in ods:
+        od.orderstatus=jsdata['orderstatus']
+        od.save()
+
+    return JsonResponse({"status":"OK"})
