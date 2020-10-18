@@ -28,6 +28,12 @@ class LoginMiddleware(MiddlewareMixin):
                         'msg':'用户没有管理员权限',
                         'status':'false'
                     })
+            if url_d[1]=='business':
+                if user['type']!=2:
+                    return JsonResponse({
+                        'msg': '用户不是商家',
+                        'status': 'false'
+                    })
 
 
 

@@ -8,6 +8,7 @@ from django.db.utils import IntegrityError
 from .models import User
 from .forms import LoginUserForm,AddUserForm,ModifySelfInfoForm
 from MyUtil.myUtil import pageUtil
+from verification.models import Vofficer
 
 import hashlib
 import json
@@ -213,3 +214,94 @@ def setstatus(request):
         context['status']='false'
         context['msg']='用户没有权限'
     return JsonResponse(context)
+
+def addvofficers(request):
+    jsdata=json.loads(request.body)
+    vlist=[]
+    user=request.session.get('user')
+    print('1')
+    for vof in jsdata['vofficers']:
+        try:
+            vu=User.objects.get(Q(id=vof)&Q(type=User.TYPE_VERIFICATION))
+            try:
+                Vofficer.objects.get(vuser=vu)
+                return JsonResponse({"status":"false",'msg':"核销员id错误"})
+            except Vofficer.DoesNotExist:
+                pass
+            vlist.append(vu)
+        except User.DoesNotExist:
+            return JsonResponse({"status":"false",'msg':"核销员id错误"})
+    print('2')
+    for v in vlist:
+        vofficer=Vofficer()
+        vofficer.vuser=v
+        vofficer.business_id=user['id']
+        vofficer.save()
+
+
+
+    return JsonResponse({"status":'OK'})
+
+def showallvofficers(request):
+    try:
+        page=int(request.GET.get('page',1))
+        pagecount=int(request.GET.get('pagecount',10))
+        name=request.GET.get('name')
+    except:
+        return JsonResponse({
+            'status':'false',
+            'msg':'参数不正确',
+        })
+    vos = Vofficer.objects.all()
+    volist = []
+    for vo in vos:
+        volist.append(vo.vuser_id)
+    vuser = User.objects.filter(type=User.TYPE_VERIFICATION)
+    kuser = vuser.exclude(id__in=volist)
+    if name!=None:
+        kuser=kuser.filter(username__icontains=name)
+    ulist = []
+    for user in kuser:
+        ulist.append(user.to_dic())
+    context = {'status': 'OK'}
+    context.update(pageUtil(page, pagecount, ulist))
+
+    return JsonResponse(context)
+
+def showvofficers(request):
+    try:
+        page=int(request.GET.get('page',1))
+        pagecount=int(request.GET.get('pagecount',10))
+    except:
+        return JsonResponse({
+            'status':'false',
+            'msg':'参数不正确',
+        })
+    vos = Vofficer.objects.filter(business_id=request.session.get('user')['id'])
+    volist = []
+    for vo in vos:
+        volist.append(vo.vuser_id)
+    vuser = User.objects.filter(type=User.TYPE_VERIFICATION)
+    kuser = vuser.filter(id__in=volist)
+    ulist = []
+    for user in kuser:
+        ulist.append(user.to_dic())
+    context = {'status': 'OK'}
+    context.update(pageUtil(page, pagecount, ulist))
+
+    return JsonResponse(context)
+
+def delvofficers(request):
+    v_list=json.loads(request.body)['dellist']
+    user=request.session.get('user')
+    volist=[]
+    for v in v_list:
+        try:
+            vo=Vofficer.objects.get(Q(business_id=user['id'])&Q(vuser_id=v))
+            volist.append(vo)
+        except Vofficer.DoesNotExist:
+            return JsonResponse({'status':"false",'msg':'核销员列表错误'})
+    for i in volist:
+        i.delete()
+
+    return JsonResponse({"status":'OK'})

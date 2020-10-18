@@ -15,7 +15,7 @@ class PowerMiddleware(MiddlewareMixin):
             # 二级url如果为business
             # 则需验证登录
             if url_d[1]=='tourist':
-                session_id = request.COOKIES['session_id']
+                session_id = request.COOKIES.get("session_id")
                 if session_id==None :
                     return JsonResponse({
                         "msg":'请先登录',

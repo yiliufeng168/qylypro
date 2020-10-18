@@ -326,3 +326,7 @@ def delreserve(request):
         return JsonResponse({'status': 'false', 'msg': '订单不存在'})
     order.delete()
     return JsonResponse({'status':'OK'})
+
+
+def getvcode(request):
+    return JsonResponse({"status":'OK'})

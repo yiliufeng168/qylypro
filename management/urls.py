@@ -3,7 +3,9 @@ from django.urls import path
 from .views import (index,login,loginout,
                     addUser,showUserList,
                     modifyUserStatus,modifySelfInfo,
-                    modifyPassword,setstatus,addadmin)
+                    modifyPassword,setstatus,addadmin,
+                    addvofficers,showvofficers,showallvofficers,
+                    delvofficers)
 
 urlpatterns=[
     path('index/',index),
@@ -20,4 +22,9 @@ urlpatterns=[
     path('admin/showUserList/',showUserList),
     path('admin/modifyUserStatus/',modifyUserStatus),
 
+    # 下列需商家权限
+    path('business/addvofficers/',addvofficers),
+    path('business/showvofficers/',showvofficers),
+    path('business/showallvofficers/',showallvofficers),
+    path('business/delvofficers/',delvofficers),
 ]

@@ -57,7 +57,7 @@ class User(models.Model):
         return user
     def to_dic(self):
         user = {
-            'id': self.id.hex.replace('-', ''),
+            'id': self.id.hex,
             'username': self.username,
             'phone': self.phone,
             'email': self.email,

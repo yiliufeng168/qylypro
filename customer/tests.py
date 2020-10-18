@@ -24,7 +24,8 @@ class TGG(TestCase):
     for g in goods:
         print(g.name,g.min)
 
-
+class Tggg(TestCase):
+    pass
 
 
 

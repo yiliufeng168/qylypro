@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (login,showgoods,showbusiness,
                     sendorder,showorderlist,showorderdetails,
-                    delreserve,showrecommend,showgoodsdetail)
+                    delreserve,showrecommend,showgoodsdetail,
+                    getvcode)
 
 
 urlpatterns=[
@@ -18,5 +19,5 @@ urlpatterns=[
     path('tourist/showorderlist/',showorderlist),
     path('tourist/showorderdetails/',showorderdetails),
     path('tourist/delreserve/',delreserve),
-
+    path('tourist/getvcode/',getvcode),
 ]
