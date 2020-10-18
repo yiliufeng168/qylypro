@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.utils import timezone
+from django.db.models import Q
 
 from .models import Business,Goods,Sell
 from customer.models import Reserve,Order
@@ -252,6 +253,7 @@ def showorders(request):
     olist=[]
     for od in orders:
         odic={}
+        odic['order_id']=od.id.hex
         odic['order_time']=od.order_time
         odic['receiver']=od.receiver
         odic['phone']=od.phone
@@ -266,6 +268,35 @@ def showorders(request):
     return JsonResponse(context)
 
 def showorderdetails(request):
-    return JsonResponse({"status":"OK"})
+    orderid=request.GET.get('order_id')
+    user=request.session.get('user')
+    try:
+        order=Order.objects.get(Q(id=orderid)&Q(business_id=user['id']))
+    except Order.DoesNotExist:
+        return JsonResponse({"status":'false','msg':'订单不存在'})
+
+
+    odic = {}
+    odic['order_id'] = order.id.hex
+    odic['order_time'] = order.order_time
+    odic['receiver'] = order.receiver
+    odic['phone'] = order.phone
+    odic['address'] = order.address
+    odic['remarks'] = order.remarks
+    odic['orderstatus'] = order.orderstatus
+    ress=Reserve.objects.filter(order=order)
+    print(ress)
+    reslist=[]
+    for r in ress:
+        print('1')
+        reslist.append(r.getdatadic())
+    context = {
+        'status': "OK",
+        'relist':reslist
+    }
+    context.update(odic)
+
+
+    return JsonResponse(context)
 
 

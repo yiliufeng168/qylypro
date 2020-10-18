@@ -63,5 +63,18 @@ class Reserve(models.Model):
     startdatetime = models.DateTimeField(verbose_name='开始时间')
     enddatetime = models.DateTimeField(verbose_name='结束时间')
 
+    def getdatadic(self):
+        data={}
+        data['id']=self.id.hex
+        data['virtualcode']=self.virtualcode
+        data['usingstatus']=self.usingstatus
+        data['goods_name']=self.goods_name
+        data['goods_pic']=self.goods_pic.url
+        data['goods_price']=self.goods_price
+        data['goods_count']=self.goods_count
+        data['startdatetime']=self.startdatetime
+        data['enddatetime']=self.enddatetime
+        data['goods_id']=self.goods_id.hex
+        return data
 
 
