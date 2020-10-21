@@ -30,6 +30,7 @@ def login(request):
         'msg':'登录失败',
     }
     code=request.POST.get('code')
+    
     if code!=None:
         url=LOGIN_URL.format(code)
         res=req_sess.get(url)

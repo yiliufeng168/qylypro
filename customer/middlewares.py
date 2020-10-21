@@ -9,13 +9,14 @@ class PowerMiddleware(MiddlewareMixin):
         # 第一层过滤
         # 在/merchant下，未登录用户只能访问login
         url_d=request.path[1:].split('/')
-
+        print("cookie:",request.COOKIES,"*"*50)
         # url一级目录为management
         if url_d[0]=='customer':
             # 二级url如果为business
             # 则需验证登录
             if url_d[1]=='tourist':
                 session_id = request.COOKIES.get("session_id")
+
                 if session_id==None :
                     return JsonResponse({
                         "msg":'请先登录',
