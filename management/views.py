@@ -121,7 +121,7 @@ def showUserList(request):
     user_list=User.objects.filter(~Q(type=0)).order_by('username')
     ulist=[]
     for user in user_list:
-        ulist.append(user.__str__())
+        ulist.append(user.to_dic())
     context={'status':'OK'}
     context.update(pageUtil(page,pagecount,ulist))
     return JsonResponse(context)
