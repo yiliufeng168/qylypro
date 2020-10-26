@@ -8,7 +8,6 @@ import uuid
 
 
 
-
 class User(models.Model):
     STATUS_ONLINE = 2
     STATUS_OFFLINE = 1
@@ -47,7 +46,6 @@ class User(models.Model):
 
     def __str__(self):
         user={
-
             'username': self.username,
             'phone': self.phone,
             'email': self.email,
@@ -55,6 +53,7 @@ class User(models.Model):
             'status': self.status,
         }
         return user
+
     def to_dic(self):
         user = {
             'id': self.id.hex,

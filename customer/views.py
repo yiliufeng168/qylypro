@@ -15,7 +15,7 @@ import uuid
 
 from .models import Tourist,Order,Reserve
 from management.models import User
-from merchant.models import Business,Goods,Sell
+from merchant.models import Business,Goods,Sell,Tpackage,TpkDetail
 from MyUtil.myUtil import pageUtil
 
 APPID='wx1a3241e73216cd5a'
@@ -346,3 +346,43 @@ def getvcode(request):
 
 
     return JsonResponse({"status":'OK','vcode':res.virtualcode.hex})
+
+
+def showPackages(request):
+    try:
+        page=int(request.GET.get('page',1))
+        pagecount=int(request.GET.get('pagecount',10))
+        pkgname=request.GET.get("pkgname")
+    except:
+        return JsonResponse({
+            'status':'false',
+            'msg':'参数不正确',
+        })
+    context={"status":"OK"}
+    tpks=Tpackage.objects.all()
+    if pkgname!=None:
+        tpks=tpks.filter(name__icontains=pkgname)
+    tplist=[]
+    for tpk in tpks:
+        tplist.append(tpk.todic())
+    context.update(pageUtil(page, pagecount, tplist))
+    return JsonResponse(context)
+
+def showPkgDetail(request):
+    context={"status":"false"}
+    tpkid=request.GET.get("id")
+    if tpkid==None:
+        context['msg']='请输入套餐id'
+        return JsonResponse(context)
+    try:
+        tpk=Tpackage.objects.get(id=tpkid)
+    except Tpackage.DoesNotExist:
+        context['msg'] = '套餐不存在'
+        return JsonResponse(context)
+    tpdets=tpk.tpkdetail_set.all()
+    d_list=[]
+    for detail in tpdets:
+        d_list.append(detail.todic())
+    context['status']="OK"
+    context.update({'tpdetails':d_list})
+    return JsonResponse(context)

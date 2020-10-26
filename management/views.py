@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.db.utils import IntegrityError
+from django.db import transaction
 
 
 from .models import User
@@ -113,12 +114,19 @@ def showUserList(request):
     try:
         page=int(request.GET.get('page',1))
         pagecount=int(request.GET.get('pagecount',10))
+        mtype=request.GET.get("type")
+        username=request.GET.get("username")
     except:
         return JsonResponse({
             'status':'false',
             'msg':'参数不正确',
         })
+
     user_list=User.objects.filter(~Q(type=0)).order_by('username')
+    if mtype != None and mtype == '2' or mtype == '1':
+        user_list=user_list.filter(type=mtype)
+    if username!=None:
+        user_list=user_list.filter(username__icontains=username)
     ulist=[]
     for user in user_list:
         ulist.append(user.to_dic())
@@ -309,13 +317,58 @@ def delvofficers(request):
     return JsonResponse({"status":'OK'})
 
 def addPackage(request):
-    return JsonResponse({"status":"OK"})
+    jsdata=json.loads(request.body)
+    context={"status":"OK"}
+    try:
+        with transaction.atomic():
+            tpackage=Tpackage()
+            tpackage.name=jsdata['name']
+            tpackage.introduct=jsdata['introduct']
+            tpackage.save()
+            for item in jsdata['bus_list']:
+                tpk=TpkDetail()
+                tpk.business_id=item['bus_id']
+                tpk.starttime=item['starttime']
+                tpk.endtime=item['endtime']
+                tpk.tpackage=tpackage
+                tpk.save()
+    except Exception as e:
+        context={"status":"false","msg":"参数错误"}
+    return JsonResponse(context)
 
 def editPackage(request):
-    return JsonResponse({"status":"OK"})
+    jsdata = json.loads(request.body)
+    context = {"status": "OK"}
+    try:
+        with transaction.atomic():
+            tpackage = Tpackage.objects.get(id=jsdata['id'])
+            tpackage.name = jsdata['name']
+            tpackage.introduct = jsdata['introduct']
+            tpackage.save()
+            for tpk in tpackage.tpkdetail_set.all():
+                tpk.delete()
+            for item in jsdata['bus_list']:
+                tpk = TpkDetail()
+                tpk.business_id = item['bus_id']
+                tpk.starttime = item['starttime']
+                tpk.endtime = item['endtime']
+                tpk.tpackage = tpackage
+                tpk.save()
+    except Exception as e:
+        context = {"status": "false", "msg": "参数错误"}
+    return JsonResponse(context)
 
-def showPackages(request):
-    return JsonResponse({"status":"OK"})
 
 def delPackages(request):
-    return JsonResponse({"status":"OK"})
+    id_list=json.loads(request.body)['id_list']
+    print(id_list)
+    context={"status":"OK"}
+    for id in id_list:
+        try:
+            tp=Tpackage.objects.get(id=id)
+            tp.delete()
+        except Tpackage.DoesNotExist:
+            context['status']="false"
+            context[id]="删除失败"
+
+    return JsonResponse(context)

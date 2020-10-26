@@ -5,7 +5,8 @@ from .views import (index,login,loginout,
                     modifyUserStatus,modifySelfInfo,
                     modifyPassword,setstatus,addadmin,
                     addvofficers,showvofficers,showallvofficers,
-                    delvofficers,delPackages,addPackage,editPackage,showPackages)
+                    delvofficers,delPackages,addPackage,
+                    editPackage)
 
 urlpatterns=[
     path('index/',index),
@@ -24,8 +25,8 @@ urlpatterns=[
 
     path('admin/addPackage/',addPackage),
     path('admin/editPackage/',editPackage),
-    path('admin/showPackages/',showPackages),
     path('admin/delPackages/',delPackages),
+
 
     # 下列需商家权限
     path('business/addvofficers/',addvofficers),

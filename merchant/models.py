@@ -139,11 +139,29 @@ class Tpackage(models.Model):
     name=models.CharField(max_length=50,verbose_name='套餐名称')
     introduct=models.CharField(max_length=500,verbose_name="套餐简介")
 
+    def todic(self):
+        tp={
+            'id':self.id.hex,
+            'name':self.name,
+            'introduct':self.introduct
+        }
+        return tp
+
 class TpkDetail(models.Model):
     id=models.UUIDField(verbose_name='ID',db_index=True,primary_key=True,default=uuid.uuid4,editable=False)
     business=models.ForeignKey(Business,on_delete=models.CASCADE)
-    startdatetime = models.DateTimeField(verbose_name='开始时间')
-    enddatetime = models.DateTimeField(verbose_name='结束时间')
+    tpackage=models.ForeignKey(Tpackage,on_delete=models.CASCADE)
+    starttime = models.TimeField(verbose_name='开始时间')
+    endtime = models.TimeField(verbose_name='结束时间')
+
+    def todic(self):
+        tpd={
+            'bus_id':self.business_id.hex,
+            'starttime':self.starttime,
+            'endtime':self.endtime
+        }
+        tpd.update(self.business.get_data_dic())
+        return tpd
 
 
 

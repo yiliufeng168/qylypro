@@ -3,7 +3,7 @@ from django.urls import path
 from .views import (login,showgoods,showbusiness,
                     sendorder,showorderlist,showorderdetails,
                     delreserve,showrecommend,showgoodsdetail,
-                    getvcode)
+                    getvcode,showPackages,showPkgDetail)
 
 
 urlpatterns=[
@@ -12,6 +12,8 @@ urlpatterns=[
     path('showgoods/',showgoods),
     path('showbusiness/',showbusiness),
     path('showgoodsdetail/',showgoodsdetail),
+    path('showPackages/',showPackages),
+    path('showPkgDetail/',showPkgDetail),
 
     # 下列页面需要登陆后才能访问
 
