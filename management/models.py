@@ -1,6 +1,7 @@
 from django.core.serializers import serialize
 from django.db import models
 
+
 import hashlib
 import uuid
 # Create your models here.
@@ -9,7 +10,6 @@ import uuid
 
 
 class User(models.Model):
-
     STATUS_ONLINE = 2
     STATUS_OFFLINE = 1
     STATUS_DELETE=0
@@ -84,9 +84,10 @@ class User(models.Model):
             qs_user=None
         return qs_user
 
-
-
-
     class Meta:
         verbose_name=verbose_name_plural='用户'
+
+
+
+
 

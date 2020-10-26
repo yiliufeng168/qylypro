@@ -37,8 +37,6 @@ class Order(models.Model):
     tourist= models.ForeignKey(Tourist, on_delete=models.DO_NOTHING, verbose_name='游客ID')
 
 
-
-
 class Reserve(models.Model):
     USINGSTATUS_NOUSING = 0
     USINGSTATUS_USING = 1

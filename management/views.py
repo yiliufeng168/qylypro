@@ -9,6 +9,8 @@ from .models import User
 from .forms import LoginUserForm,AddUserForm,ModifySelfInfoForm
 from MyUtil.myUtil import pageUtil
 from verification.models import Vofficer
+from merchant.models import Tpackage,TpkDetail
+
 
 import hashlib
 import json
@@ -305,3 +307,15 @@ def delvofficers(request):
         i.delete()
 
     return JsonResponse({"status":'OK'})
+
+def addPackage(request):
+    return JsonResponse({"status":"OK"})
+
+def editPackage(request):
+    return JsonResponse({"status":"OK"})
+
+def showPackages(request):
+    return JsonResponse({"status":"OK"})
+
+def delPackages(request):
+    return JsonResponse({"status":"OK"})

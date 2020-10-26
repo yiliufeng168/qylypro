@@ -94,6 +94,8 @@ class Goods(models.Model):
         picurl=''
         if self.pic!='':
             picurl=self.pic.url
+        else:
+            picurl="/media/default/default.jpg"
         goods={
             'goods_id':self.id.hex,
             'name':self.name,
@@ -129,6 +131,19 @@ class Sell(models.Model):
         }
         return sell
 
+
+
+# 本来下列两个类放在managemet包下，但是存在循环调用问题，只能放在这里，以下两个类由管理员使用
+class Tpackage(models.Model):
+    id=models.UUIDField(verbose_name='ID',db_index=True,primary_key=True,default=uuid.uuid4,editable=False)
+    name=models.CharField(max_length=50,verbose_name='套餐名称')
+    introduct=models.CharField(max_length=500,verbose_name="套餐简介")
+
+class TpkDetail(models.Model):
+    id=models.UUIDField(verbose_name='ID',db_index=True,primary_key=True,default=uuid.uuid4,editable=False)
+    business=models.ForeignKey(Business,on_delete=models.CASCADE)
+    startdatetime = models.DateTimeField(verbose_name='开始时间')
+    enddatetime = models.DateTimeField(verbose_name='结束时间')
 
 
 
