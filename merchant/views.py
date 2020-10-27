@@ -169,7 +169,7 @@ def showgoodslist(request):
 
 def delsells(request):
     context={
-        'status':'ok'
+        'status':'OK'
     }
     del_list=request.GET.get('del_list')
     if del_list.endswith(','):
@@ -198,7 +198,7 @@ def delsells(request):
 
 def delgoods(request):
     context={
-        'status':'ok'
+        'status':'OK'
     }
     del_list=request.GET.get('del_list')
     if del_list.endswith(','):
