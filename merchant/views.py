@@ -233,7 +233,7 @@ def editgoods(request):
         goods.name = cleaned_data['name']
         goods.pic.delete(True)
         goods.pic = request.FILES.get('pic')
-        goods.price = cleaned_data['price']
+        goods.introduct=cleaned_data['introduct']
         goods.save()
     else:
         context.update({

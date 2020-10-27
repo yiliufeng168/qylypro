@@ -21,8 +21,10 @@ class GoodsForm(forms.ModelForm):
 class EditGoodsForm(forms.Form):
     id = forms.UUIDField(label='id')
     name = forms.CharField(max_length=50,label='商品名')
+    introduct = forms.CharField(max_length=500)
     # pic = forms.ImageField(label='图片')
-    price = forms.FloatField(label='价格')
+    # price = forms.FloatField(label='价格')
+
 
 class SellForm(forms.ModelForm):
     class Meta:
