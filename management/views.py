@@ -226,30 +226,24 @@ def setstatus(request):
     return JsonResponse(context)
 
 def addvofficers(request):
-    jsdata=json.loads(request.body)
-    vlist=[]
-    user=request.session.get('user')
-    print('1')
-    for vof in jsdata['vofficers']:
+    vof=request.GET.get('vofficers')
+    user=request.session.get("user")
+    if vof==None:
+        return JsonResponse({"status": "false", 'msg': "核销员id不能为空"})
+
+    try:
+        vu=User.objects.get(Q(id=vof)&Q(type=User.TYPE_VERIFICATION))
         try:
-            vu=User.objects.get(Q(id=vof)&Q(type=User.TYPE_VERIFICATION))
-            try:
-                Vofficer.objects.get(vuser=vu)
-                return JsonResponse({"status":"false",'msg':"核销员id错误"})
-            except Vofficer.DoesNotExist:
-                pass
-            vlist.append(vu)
-        except User.DoesNotExist:
+            Vofficer.objects.get(vuser=vu)
             return JsonResponse({"status":"false",'msg':"核销员id错误"})
-    print('2')
-    for v in vlist:
-        vofficer=Vofficer()
-        vofficer.vuser=v
-        vofficer.business_id=user['id']
-        vofficer.save()
-
-
-
+        except Vofficer.DoesNotExist:
+            pass
+    except User.DoesNotExist:
+        return JsonResponse({"status":"false",'msg':"核销员id错误"})
+    vofficer=Vofficer()
+    vofficer.vuser=vu
+    vofficer.business_id=user['id']
+    vofficer.save()
     return JsonResponse({"status":'OK'})
 
 def showallvofficers(request):
